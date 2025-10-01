@@ -1,0 +1,21 @@
+site_name: Nati's Recipes
+theme:
+  name: material
+  language: en
+plugins:
+  - search
+  - awesome-pages
+markdown_extensions:
+  - admonition
+  - footnotes
+  - tables
+  - attr_list
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.tasklist
+extra:
+  generator: false
+extra_css:
+  - /stylesheets/recipe-img.css
