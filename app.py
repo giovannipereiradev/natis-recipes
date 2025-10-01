@@ -8,8 +8,8 @@ logging.getLogger("werkzeug").disabled = True
 SITE_DIR = "site"
 
 # Sempre roda mkdocs build ao iniciar
-print(">> Gerando site com MkDocs...")
-subprocess.run(["mkdocs", "build"], check=True)
+#print(">> Gerando site com MkDocs...")
+#subprocess.run(["mkdocs", "build"], check=True)
 
 app = Flask(__name__, static_folder=SITE_DIR)
 PORT = int(os.environ.get("PORT", 8080))
