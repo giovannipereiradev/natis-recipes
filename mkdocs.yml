@@ -1,7 +1,24 @@
 site_name: Nati's Recipes
 theme:
+  features:
+    - navigation.top
+    - search.suggest
+    - search.highlight
   name: material
   language: en
+  palette: 
+  - scheme: default
+    toggle:
+      icon: material/brightness-7 
+      name: Switch to dark mode
+  - scheme: slate
+    toggle:
+      icon: material/brightness-4
+      name: Switch to light mode
+  icon:
+    repo: material/plus
+repo_url: https://automate.giovannitavares.com/form/natis-recipies-adding
+repo_name: Add Recipe
 plugins:
   - search
   - awesome-pages
@@ -19,3 +36,4 @@ extra:
   generator: false
 extra_css:
   - /stylesheets/recipe-img.css
+copyright: '<copyright style="color: var(--md-footer-fg-color--lighter);" >Feito com todo o carinho do mundo pelo <a style="color: var(--md-footer-fg-color--light);" href="https://github.giovannitavares.com" target="_blank">gigi</a></copyright>'

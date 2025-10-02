@@ -1,12 +1,12 @@
 ## Seja bem vinda meu amor!
 
-Fiz esse site com todo o carinho do mundo para que você possa se organizar suas (futuramente nossas) receitas.
+Fiz esse site para que você possa se organizar suas (futuramente nossas) receitas.
 
-Espero que seja muito util para você.
+Espero que seja muito util para você. Me avise se faltou alguma função que você gostaria.
 
-## Solicitação de novas receitas 
+## Adicionar de novas receitas 
 
-Manda pra melhor pessoa do mundo (Dica ele é seu namorado) e ele vai adicionar aqui pra você :)
+Clicando no menu ai em cima tem um botão de 'Add recipe' preenche lá e rapidinho aparece aqui pra você :)
 
 
 ## Reclamações
