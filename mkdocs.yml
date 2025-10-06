@@ -6,17 +6,21 @@ theme:
     - search.highlight
   name: material
   language: en
-  palette: 
+  palette:
   - scheme: default
+    primary: custom
+    accent: custom
     toggle:
-      icon: material/brightness-7 
+      icon: material/brightness-7
       name: Switch to dark mode
   - scheme: slate
+    primary: custom
+    accent: custom
     toggle:
       icon: material/brightness-4
       name: Switch to light mode
   icon:
-    repo: material/plus
+      repo: material/plus
 repo_url: https://automate.giovannitavares.com/form/natis-recipies-adding
 repo_name: Add Recipe
 plugins:
@@ -36,4 +40,5 @@ extra:
   generator: false
 extra_css:
   - /stylesheets/recipe-img.css
+  - stylesheets/custom-theme.css
 copyright: '<copyright style="color: var(--md-footer-fg-color--lighter);" >Feito com todo o carinho do mundo pelo <a style="color: var(--md-footer-fg-color--light);" href="https://github.giovannitavares.com" target="_blank">gigi</a></copyright>'
