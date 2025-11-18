@@ -1,0 +1,270 @@
+{
+  "name": "Adding natis recipes",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "value": "giovannipereiradev",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "natis-recipes",
+          "mode": "list",
+          "cachedResultName": "natis-recipes",
+          "cachedResultUrl": "https://github.com/giovannipereiradev/natis-recipes"
+        },
+        "filePath": "=docs/{{ $json.category }}/{{ $json.filename }}",
+        "fileContent": "={{ $json.markdown }}",
+        "commitMessage": "adding by n8n"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -112
+      ],
+      "id": "98c9c4fb-f239-4b62-bf13-6a4e5cdbcf39",
+      "name": "COMMIT MARKDOWN",
+      "webhookId": "35776683-b5a3-42ef-a702-0f778c572a68",
+      "credentials": {
+        "githubApi": {
+          "id": "m2OS3fPBa26QvY8V",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Function Node\nreturn items.map(item => {\n  const data = item.json;\n\n  // Função para capitalizar título (cada palavra inicial maiúscula)\n  const capitalizeTitle = str =>\n    str\n      .toLowerCase()\n      .split(\" \")\n      .map(word => word.charAt(0).toUpperCase() + word.slice(1))\n      .join(\" \");\n\n  // Função para capitalizar só a primeira letra de uma frase\n  const capitalizeSentence = str =>\n    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();\n\n  // Normalizar título\n  const title = capitalizeTitle(data[\"Recipe title\"].trim());\n\n  // Slug para nome do arquivo e imagem\n  const slug = title\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .toLowerCase()\n    .replace(/[^a-z0-9\\s]/g, \"\")\n    .trim()\n    .replace(/\\s+/g, \"-\");\n\n  const filename = `${slug}.md`;\n  const imageFile = `${slug}.jpg`;\n\n  // Ingredients\n  const ingredients = data[\"Ingredients\"]\n    .split(/\\r?\\n/)\n    .map(i => i.trim())\n    .filter(Boolean)\n    .map(i => `    - ${capitalizeSentence(i)}`)\n    .join(\"\\n\");\n\n  // Utensils\n  const utensils = data[\"Utensils\"]\n    .split(/\\r?\\n/)\n    .map(i => i.trim())\n    .filter(Boolean)\n    .map(i => `    - ${capitalizeSentence(i)}`)\n    .join(\"\\n\");\n\n  // Cost → transformar em $\n  const costNum = parseInt(data[\"Cost (1 to 5)\"], 10);\n  const cost = \"$\".repeat(Math.min(Math.max(costNum, 1), 5));\n\n  // Cook time e yield\n  const cookTime = data[\"Cook time (Minutes)\"];\n  const yieldInfo = data[\"Yield\"];\n\n  // Preparation Method numerado\n  const preparation = data[\"Preparation Method\"]\n    .split(/\\r?\\n/)\n    .map(i => i.trim())\n    .filter(Boolean)\n    .map((step, idx) => `${idx + 1}. ${capitalizeSentence(step)}`)\n    .join(\"\\n\");\n\n  // Montar Markdown final\n  const markdown = `![${title}](../images/${imageFile}){ .recipe-img }\n\n!!! abstract \"Ingredients\"\n${ingredients}\n\n!!! tip \"Utensils\"\n${utensils}\n\n!!! info \"Information\"\n    - Cost: ${cost}  \n    - Prep & cook time: ${cookTime} minutos  \n    - Yield: ${yieldInfo}  \n\n## Preparation Method\n\n${preparation}\n`;\n\n  return {\n    json: {\n      filename,\n      imageFile,\n      markdown,\n      category: $input.first().json.Category.toLowerCase()\n    },\n    // repassa também o binário que veio do form\n    binary: item.binary \n      ? { Image: item.binary[\"Image\"] } // copia a chave Image\n      : undefined,\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        -208
+      ],
+      "id": "a0e0ff4a-a7f5-4b59-98ed-38d0358dab09",
+      "name": "CREATE MARKDOWN"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "giovannipereiradev"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "natis-recipes",
+          "mode": "list",
+          "cachedResultName": "natis-recipes",
+          "cachedResultUrl": "https://github.com/giovannipereiradev/natis-recipes"
+        },
+        "filePath": "=docs/images/{{ $json.imageFile }}",
+        "binaryData": true,
+        "binaryPropertyName": "Image",
+        "commitMessage": "adding by n8n"
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        -304
+      ],
+      "id": "571b241b-42fa-45bc-9d88-14e418a37135",
+      "name": "COMMIT IMAGE",
+      "webhookId": "8e1ce2ad-9ea0-40d7-8a46-82e8b26344ac",
+      "credentials": {
+        "githubApi": {
+          "id": "m2OS3fPBa26QvY8V",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "Add New Recipe",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Recipe title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Image",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg, .png"
+            },
+            {
+              "fieldLabel": "Ingredients",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Utensils",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Cost (1 to 5)",
+              "fieldType": "number",
+              "placeholder": "ex: 3",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Cook time (Minutes)",
+              "placeholder": "ex: 90",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Preparation Method",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Yield",
+              "placeholder": "ex: 6 (200 each)",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Category",
+              "placeholder": "ex: brazil",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "Add recipe",
+          "path": "natis-recipies-adding",
+          "respondWithOptions": {
+            "values": {
+              "formSubmittedText": "Your recipe has been added."
+            }
+          },
+          "ignoreBots": true,
+          "customCss": ":root {\n\t--font-family: 'Open Sans', sans-serif;\n\t--font-weight-normal: 400;\n\t--font-weight-bold: 600;\n\t--font-size-body: 12px;\n\t--font-size-label: 14px;\n\t--font-size-test-notice: 12px;\n\t--font-size-input: 14px;\n\t--font-size-header: 20px;\n\t--font-size-paragraph: 14px;\n\t--font-size-link: 12px;\n\t--font-size-error: 12px;\n\t--font-size-html-h1: 28px;\n\t--font-size-html-h2: 20px;\n\t--font-size-html-h3: 16px;\n\t--font-size-html-h4: 14px;\n\t--font-size-html-h5: 12px;\n\t--font-size-html-h6: 10px;\n\t--font-size-subheader: 14px;\n\n\t/* Colors */\n\t--color-background: #fbfcfe;\n\t--color-test-notice-text: #e6a23d;\n\t--color-test-notice-bg: #fefaf6;\n\t--color-test-notice-border: #f6dcb7;\n\t--color-card-bg: #ffffff;\n\t--color-card-border: #dbdfe7;\n\t--color-card-shadow: rgba(99, 77, 255, 0.06);\n\t--color-link: #7e8186;\n\t--color-header: #525356;\n\t--color-label: #555555;\n\t--color-input-border: #dbdfe7;\n\t--color-input-text: #71747A;\n\t--color-focus-border: #8CA9A1;\n\t--color-submit-btn-bg: #8CA9A1;\n\t--color-submit-btn-text: #ffffff;\n\t--color-error: #ea1f30;\n\t--color-required: #8CA9A1;\n\t--color-clear-button-bg: #7e8186;\n\t--color-html-text: #555;\n\t--color-html-link: #8CA9A1;\n\t--color-header-subtext: #7e8186;\n\n\t/* Border Radii */\n\t--border-radius-card: 8px;\n\t--border-radius-input: 6px;\n\t--border-radius-clear-btn: 50%;\n\t--card-border-radius: 8px;\n\n\t/* Spacing */\n\t--padding-container-top: 24px;\n\t--padding-card: 24px;\n\t--padding-test-notice-vertical: 12px;\n\t--padding-test-notice-horizontal: 24px;\n\t--margin-bottom-card: 16px;\n\t--padding-form-input: 12px;\n\t--card-padding: 24px;\n\t--card-margin-bottom: 16px;\n\n\t/* Dimensions */\n\t--container-width: 448px;\n\t--submit-btn-height: 48px;\n\t--checkbox-size: 18px;\n\n\t/* Others */\n\t--box-shadow-card: 0px 4px 16px 0px var(--color-card-shadow);\n\t--opacity-placeholder: 0.5;\n}"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -416,
+        -208
+      ],
+      "id": "e08ff50b-4404-42d0-96af-18f869b53de7",
+      "name": "FORM",
+      "webhookId": "natis-recipies-adding",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "6Xy1e33vniJILSzB",
+          "name": "nati"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a04ec1c1-bb0b-406a-bc3d-9977e5c1c7a7",
+              "leftValue": "={{ $('FORM').item.json.Image }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        -208
+      ],
+      "id": "efab479d-9688-4cf3-9593-44bb3dd00a43",
+      "name": "HAS IMAGE"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "COMMIT MARKDOWN": {
+      "main": [
+        []
+      ]
+    },
+    "CREATE MARKDOWN": {
+      "main": [
+        [
+          {
+            "node": "HAS IMAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FORM": {
+      "main": [
+        [
+          {
+            "node": "CREATE MARKDOWN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HAS IMAGE": {
+      "main": [
+        [
+          {
+            "node": "COMMIT MARKDOWN",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "COMMIT IMAGE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "COMMIT MARKDOWN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "546d944a-ac96-4752-95b4-e8c6127c6930",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e9179d0d5ed06e21d16d327fd2ec6210f9a5307549acc2f7f8624ef853abbbfe"
+  },
+  "id": "8RYtM56wc7OU0Dr1",
+  "tags": []
+}
