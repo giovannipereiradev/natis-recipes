@@ -122,8 +122,6 @@ The workflow in `n8n/workflow.json` processes form submissions:
 
 Distributed under a custom non-commercial license. You are free to use, copy and modify this project for personal and non-commercial purposes, as long as you credit the original author. See the [LICENSE](LICENSE) file for full details.
 
----
-
 <div align="center">
   Built by <a href="https://giovannitavares.com">Giovanni Tavares</a>
 </div>

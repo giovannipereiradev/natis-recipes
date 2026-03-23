@@ -121,8 +121,6 @@ O fluxo em `n8n/workflow.json` processa as submissões do formulário:
 
 Distribuído sob licença não comercial personalizada. Você pode usar, copiar e modificar este projeto para fins pessoais e não comerciais, desde que mantenha os créditos ao autor original. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
----
-
 <div align="center">
   Desenvolvido por <a href="https://giovannitavares.com">Giovanni Tavares</a>
 </div>
