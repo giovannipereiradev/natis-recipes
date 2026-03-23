@@ -1,175 +1,129 @@
-# Nati’s Recipes  
-Repositório que centraliza e gera automaticamente um site de receitas organizado por país, usando MkDocs + automações n8n.
+# Nati's Recipes
 
-![Mockup do site](nati-recipe-mockup.png)
+<div align="center">
 
+![Site Mockup](nati-recipe.png)
 
-
-## Badges  
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-LTS-blue">
-  <img src="https://img.shields.io/badge/MkDocs-Material%20Theme-brightgreen">
-  <img src="https://img.shields.io/badge/Docs-MkDocs--Material-informational">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg">
-</p>
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
+![Licença](https://img.shields.io/badge/licen%C3%A7a-Non--Commercial-red?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![MkDocs](https://img.shields.io/badge/MkDocs-Material-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)
+![n8n](https://img.shields.io/badge/n8n-Automation-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
 
 
+</div>
 
-## Tabela de Conteúdos
-- [Nati’s Recipes](#natis-recipes)
-  - [Badges](#badges)
-  - [Tabela de Conteúdos](#tabela-de-conteúdos)
-  - [Visão Geral](#visão-geral)
-  - [Arquitetura](#arquitetura)
-  - [Estrutura de Pastas](#estrutura-de-pastas)
-  - [Instalação](#instalação)
-    - [1. Clonar o repositório](#1-clonar-o-repositório)
-    - [2. Instalar dependências](#2-instalar-dependências)
-  - [Execução Local](#execução-local)
-  - [Como Adicionar Receitas](#como-adicionar-receitas)
-    - [Método Manual](#método-manual)
-    - [Método Automático (n8n)](#método-automático-n8n)
-  - [Fluxo n8n](#fluxo-n8n)
-  - [Boas Práticas](#boas-práticas)
-  - [Licença](#licença)
-  - [Créditos](#créditos)
+[Para ler em Português, clique aqui!](./README.pt-BR.md)
 
+## About
 
+Nati's Recipes is a site I built to organize my girlfriend's (Natalia) recipes, sorted by country of origin. Content is written in Markdown and the site is generated with **MkDocs + Material Theme**, hosted on **Discloud** with automatic rebuild on every push. To make adding new recipes easier, there is a full automation workflow in **n8n**: just fill out a form and the flow normalizes the title, generates the slug, builds the `.md` file from the standard template, places it in the correct folder, and commits it to the repository automatically.
 
-## Visão Geral  
-Nati’s Recipes é um catálogo estático de receitas organizadas por país.  
-O conteúdo é mantido em Markdown e o site é gerado com MkDocs + Material Theme.  
-O deploy é automático: a cada push o host reinicia e reconstrói o projeto.
+## Features
 
+| Feature | Description |
+|---|---|
+| **Catalog by country** | Recipes organized in folders by origin (`brazil/`, `france/`, `fusion/`, etc.), with automatic navigation via the `awesome-pages` plugin. |
+| **Standardized template** | Every recipe follows a consistent layout with image, ingredients (admonition), utensils, info and preparation steps. |
+| **Custom theme** | Material Theme with a custom color palette, dark/light mode support and custom CSS for recipe images. |
+| **Built-in search** | Search plugin with term suggestion and highlighting directly on the site. |
+| **Form-based entry** | External form connected to n8n. No files need to be created manually. |
+| **n8n automation** | Full workflow that receives the form submission, normalizes data, generates the slug, builds the `.md`, places the file and commits to the repository. |
+| **Automatic deploy** | On every push, Discloud restarts the container, `app.py` runs `mkdocs build` and serves the static site via Flask on port 8080. |
+| **Rebuild on boot** | The Flask server always runs `mkdocs build` on startup, ensuring the latest content is available with no manual step. |
 
+## Architecture
 
-## Arquitetura  
-- **MkDocs** para geração do site.  
-- **Material for MkDocs** para o tema.  
-- **Python LTS** para execução local.  
-- **n8n** para automação da criação de receitas.  
-- **Hospedagem automática**: push → rebuild → publicação.
+`app.py` is the entry point: on startup it runs `mkdocs build` to generate the static site in the `site/` folder, then starts a Flask server that serves the generated files. Content lives in `docs/` organized by country and the `awesome-pages` plugin builds the sidebar navigation automatically from the folder structure. `mkdocs.yml` centralizes the theme, plugins, Markdown extensions and the n8n form URL exposed as the "Add Recipe" button in the site header.
 
+## Tech Stack
 
+- **[MkDocs](https://www.mkdocs.org/)** - static site generator from Markdown files; all navigation, search and build are managed by it.
+- **[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)** - theme with customizable palette, dark/light mode, admonitions and advanced Markdown extensions.
+- **[mkdocs-awesome-pages-plugin](https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin)** - automatically generates the sidebar navigation from the folder structure, without listing pages in `mkdocs.yml`.
+- **[Flask](https://flask.palletsprojects.com/)** - lightweight server that serves the static files generated by MkDocs and handles path routing in the Discloud environment.
+- **[n8n](https://n8n.io/)** - automation platform that processes the recipe form, generates the files and commits them to the repository.
+- **[Discloud](https://discloudbot.com/)** - Python container hosting with automatic restart on every push.
 
-## Estrutura de Pastas  
+## Folder Structure
 
 ```
-docs/
-   BR/
-      exemplo.md
-   US/
-      exemplo.md
-   ...
-n8n/
-   workflow.json
-app.py
-mkdocs.yml
-requirements.txt
-discloud.config
+natis-recipes/
+│
+├── app.py                  # Entry point: MkDocs build + Flask server
+├── mkdocs.yml              # Site config (theme, plugins, extensions)
+├── requirements.txt        # Python dependencies
+├── discloud.config         # Deploy config (Discloud)
+│
+├── n8n/
+│   └── workflow.json       # Automation workflow for adding recipes
+│
+└── docs/
+    ├── images/             # Recipe images
+    ├── stylesheets/        # Custom CSS (theme and recipe images)
+    │
+    ├── brazil/             # Brazilian recipes
+    ├── france/             # French recipes
+    ├── fusion/             # Fusion / international recipes
+    ├── asia/               # Asian recipes
+    ├── cuba/               # Cuban recipes
+    ├── germany/            # German recipes
+    └── greece/             # Greek recipes
 ```
 
-**docs/** – todas as receitas, separadas por país  
-**n8n/** – fluxos automáticos  
-**app.py** – servidor simples 0.0.0.0:8080  
-**mkdocs.yml** – tema, navegação e plugins  
+## How to Add Recipes
 
+### Via form (main method)
 
+Open the form available via the **"Add Recipe"** button in the site header or directly through n8n. The workflow handles everything automatically:
 
-## Instalação
+1. Title normalization and slug generation
+2. Creation of the `.md` file from the standard template
+3. Placement in the correct country folder
+4. Image processing (if provided)
+5. Automatic commit to the repository and deploy on Discloud
 
-### 1. Clonar o repositório  
-```sh
-git clone https://github.com/giovannipereiradev/natis-recipes.git
-cd natis-recipes
-```
+### Manually
 
-### 2. Instalar dependências  
-```sh
-pip install -r requirements.txt
-```
-
-
-
-## Execução Local  
-```sh
-python app.py
-```
-
-O site estará acessível na porta **8080**.
-
-
-
-## Como Adicionar Receitas
-
-### Método Manual  
-Crie um arquivo `.md` em:
-
-`docs/<PAIS>/<slug-da-receita>.md`
-
-Use o template padrão:
+Create a `.md` file at `docs/<country>/<recipe-slug>.md` following the template:
 
 ```markdown
-# Nome da Receita
+![Recipe Name](../images/recipe-slug.jpg){ .recipe-img }
 
-![Imagem](caminho-da-imagem.png)
+!!! abstract "Ingredients"
+    - item 1
+    - item 2
 
-## Ingredientes
-- item 1
-- item 2
+!!! tip "Utensils"
+    - item
 
-## Utensílios
-- item
+!!! info "Info"
+    **Cost:** $
+    **Prep time:** X min
+    **Servings:** X
 
-## Informações
-- Custo:  
-- Tempo de preparo:  
-- Rendimento:  
+## Preparation
 
-## Modo de Preparo
-1. Passo 1  
-2. Passo 2
+1. Step 1
+2. Step 2
 ```
 
+## n8n Workflow
 
+The workflow in `n8n/workflow.json` processes form submissions:
 
-### Método Automático (n8n)  
-- Preencha o formulário conectado ao fluxo.  
-- O n8n gera automaticamente:
-  - slug  
-  - nome do arquivo  
-  - template  
-  - imagem  
-  - posicionamento correto na pasta  
+1. Receives form data (title, country, ingredients, preparation steps, image)
+2. Normalizes the title and generates the slug (`lowercase-with-hyphens`)
+3. Builds the Markdown content from the standard template
+4. Places the file in the correct folder inside `docs/`
+5. Commits and pushes to the repository, and Discloud detects the push and rebuilds the site
 
-Fluxo completo disponível em `/n8n`.
+## License
 
+Distributed under a custom non-commercial license. You are free to use, copy and modify this project for personal and non-commercial purposes, as long as you credit the original author. See the [LICENSE](LICENSE) file for full details.
 
+---
 
-## Fluxo n8n  
-1. Normalização do título  
-2. Criação do arquivo `.md`  
-3. Geração da imagem (se enviada)  
-4. Preenchimento do layout padrão  
-5. Commit automático no repositório  
-
-
-
-## Boas Práticas  
-- Usar nomes de arquivos com slug (`minúsculas-e-com-hífens`).  
-- Imagens otimizadas.  
-- Sempre seguir o template oficial.  
-- Manter a estrutura por país.  
-- Evitar arquivos grandes no repositório.
-
-
-
-## Licença  
-Projeto sob licença **MIT**.
-
-
-
-## Créditos  
-https://github.giovannitavares.com
-
-https://giovannitavares.com
+<div align="center">
+  Built by <a href="https://giovannitavares.com">Giovanni Tavares</a>
+</div>
